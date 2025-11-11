@@ -1,13 +1,8 @@
 import AnalyticsHeader from "../../../components/application-analytics/analytical-header-part-components/AnalyticsHeader"
 
-const AnalyticsHeaderContainer = () => {
+const AnalyticsHeaderContainer = ({ onTabChange }) => {
   return (
-    
-
-
-        <AnalyticsHeader/>
-      
-    
+    <AnalyticsHeader onTabChange={onTabChange} />
   )
 }
 

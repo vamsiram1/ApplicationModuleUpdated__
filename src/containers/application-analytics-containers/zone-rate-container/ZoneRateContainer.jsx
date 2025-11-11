@@ -129,7 +129,7 @@ import DropRateZone from "../../../components/application-analytics/rate-zone-co
 import { usePermission } from "../../../hooks/usePermission ";
 import axios from "axios";
 
-const ZoneRateContainer = () => {
+const ZoneRateContainer = ({ activeTab = "Zone" }) => {
   // ✅ State to hold API data
   const [allRateData, setAllRateData] = useState([]);
 
@@ -183,9 +183,10 @@ const ZoneRateContainer = () => {
   const canViewDGM = usePermission("DISTRIBUTE_DGM").canView;
   const canViewCampus = usePermission("DISTRIBUTE_CAMPUS").canView;
 
-  // ✅ Filtering logic (unchanged)
+  // ✅ Filtering logic based on both activeTab and permissions
   const visibleRateData = useMemo(() => {
-    return allRateData.filter((item) => {
+    // First filter by permissions
+    const permissionFiltered = allRateData.filter((item) => {
       const key = item.permissionKey;
 
       if (key === "DISTRIBUTE_ZONE") return canViewZone;
@@ -194,7 +195,18 @@ const ZoneRateContainer = () => {
 
       return false;
     });
-  }, [allRateData, canViewZone, canViewDGM, canViewCampus]);
+
+    // Then filter by activeTab
+    return permissionFiltered.filter((item) => {
+      const itemType = (item.type || "").toLowerCase();
+      const activeType = (activeTab || "").toLowerCase();
+      return itemType === activeType;
+    });
+  }, [allRateData, canViewZone, canViewDGM, canViewCampus, activeTab]);
+
+  console.log("Active Tab:", activeTab);
+  console.log("All Rate Data:", allRateData);
+  console.log("Visible Rate Data:", visibleRateData);
 
   // ✅ Return if nothing to show
   if (visibleRateData.length === 0) return null;

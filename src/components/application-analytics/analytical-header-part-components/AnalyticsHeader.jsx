@@ -5,7 +5,7 @@ import ApplicationSearchBar from "../../../widgets/application-search-bar-compon
 import SearchDropdown from "../analytics-header-part/searchbar-drop-down-component/SearchDropdown";
 import FilterSearch from "../analytics-header-part/filter-search-component/FilterSearch";
 
-const AnalyticsHeader = () => {
+const AnalyticsHeader = ({ onTabChange }) => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -96,7 +96,7 @@ const AnalyticsHeader = () => {
         />
 
         {showSuggestions && <FilterSearch suggestions={suggestions} />}
-        {showSearchDropdown && <SearchDropdown />}
+        {showSearchDropdown && <SearchDropdown onTabChange={onTabChange} />}
       </div>
     </div>
   );
