@@ -32,7 +32,7 @@ const AnalyticsWholeContainer = () => {
   return (
     <>
       <div className={styles.analytics_section}>
-        <AnalyticsHeaderContainer onTabChange={handleTabChange} />
+        <AnalyticsHeaderContainer onTabChange={handleTabChange} activeTab={activeTab} />
         <MetricCards />
         <ZoneRateContainer activeTab={activeTab} />
       </div>

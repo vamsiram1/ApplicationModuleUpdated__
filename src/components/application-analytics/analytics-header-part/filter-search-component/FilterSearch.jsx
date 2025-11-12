@@ -7,7 +7,7 @@ const FilterSearch = ({ suggestions = [] }) => {
   return (
     <div className={styles.filter_search_container}>
       <div className={styles.suggestion_header}>
-        <p classname={styles.suggestion_text_head}>Search Suggestions</p>
+        <p className={styles.suggestion_text_head}>Search Suggestions</p>
         <div className={styles.line_wrapper}>
           <hr className={styles.suggestion_line} />
         </div>
@@ -19,7 +19,10 @@ const FilterSearch = ({ suggestions = [] }) => {
             className={styles.list_items}
             key={`${normalize(item.name)}-${index}`}
           >
-            {item?.name}
+            <span>{item?.name}</span>
+            {item?.type && (
+              <span className={styles.item_type}> ({item.type})</span>
+            )}
           </li>
         ))}
       </ul>

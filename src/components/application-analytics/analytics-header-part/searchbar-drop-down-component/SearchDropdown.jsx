@@ -134,12 +134,11 @@ const SearchDropdown = ({ onTabChange }) => {
 
   // 5. Effect hook to sync active tab with parent component on initial load/permission change
   useEffect(() => {
-    if (initialActiveTab) {
-      setActiveTab(initialActiveTab);
-      onTabChange?.(initialActiveTab);
+    if (visibleTabs.length > 0 && activeTab) {
+      onTabChange?.(activeTab);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialActiveTab]); // Trigger when initialActiveTab is determined
+  }, [tabAccess]); // Depend on tabAccess to trigger on load/permission update
 
   const handleTabClick = (tabLabel) => {
     // Find the full tab object to check interaction permission

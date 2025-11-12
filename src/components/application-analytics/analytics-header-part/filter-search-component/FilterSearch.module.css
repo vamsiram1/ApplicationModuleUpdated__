@@ -50,4 +50,14 @@ ul {
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item_type {
+  color: #666;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 8px;
 }
