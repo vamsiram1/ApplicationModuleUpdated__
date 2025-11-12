@@ -3,12 +3,12 @@ import Inputbox from "../../../../../../widgets/Inputbox/InputBox";
 import GenderSelection from "./GenderSelection";
 import FormError from "./FormError";
 import styles from "./DownSection.module.css";
-
-const DownSection = ({ 
-  values, 
-  handleChange, 
-  handleBlur, 
-  touched, 
+ 
+const DownSection = ({
+  values,
+  handleChange,
+  handleBlur,
+  touched,
   errors,
   setFieldValue,
   setFieldTouched,
@@ -21,15 +21,20 @@ const DownSection = ({
   // Custom handler for number-only fields
   const handleNumberFieldChange = (e) => {
     const { name, value } = e.target;
-    
+   
     // Clear external error for this field when user starts typing
     if (onClearFieldError && externalErrors[name]) {
       onClearFieldError(name);
     }
-    
+   
     // Filter out everything except numbers
-    const filteredValue = value.replace(/[^0-9]/g, '');
-    
+    let filteredValue = value.replace(/[^0-9]/g, '');
+   
+    // Limit aaparNo to exactly 12 digits
+    if (name === 'aaparNo') {
+      filteredValue = filteredValue.slice(0, 12);
+    }
+   
     // Use Formik's setFieldValue to update the field
     if (setFieldValue) {
       setFieldValue(name, filteredValue);
@@ -44,7 +49,7 @@ const DownSection = ({
       });
     }
   };
-
+ 
   return (
     <div className={styles.down_section_container}>
       <div className={styles.down_section_form_row}>
@@ -95,5 +100,5 @@ const DownSection = ({
     </div>
   );
 };
-
+ 
 export default DownSection;

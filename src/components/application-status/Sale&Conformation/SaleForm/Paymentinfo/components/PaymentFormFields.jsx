@@ -4,10 +4,10 @@ import Inputbox from '../../../../../../widgets/Inputbox/InputBox';
 import Dropdown from '../../../../../../widgets/Dropdown/Dropdown';
 import { saleApi } from '../../services/saleApi';
 import styles from './PaymentFormFields.module.css';
-
+ 
 // Debug flag for conditional logging
 const DEBUG = process.env.NODE_ENV === 'development';
-
+ 
 const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFieldValue }) => {
   // Combined state for better performance
   const [paymentState, setPaymentState] = useState({
@@ -17,17 +17,17 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
     cityOptions: [],
     loading: false
   });
-
+ 
   // Destructure for easier access
   const { organizationOptions, bankOptions, branchOptions, cityOptions, loading } = paymentState;
-
+ 
   // Fetch organizations on component mount
   useEffect(() => {
     const fetchOrganizations = async () => {
       setPaymentState(prev => ({ ...prev, loading: true }));
       try {
         const data = await saleApi.getOrganizations();
-        
+       
         // Handle different response formats
         let organizationsArray = [];
         if (Array.isArray(data)) {
@@ -39,7 +39,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         } else if (data && data.result && Array.isArray(data.result)) {
           organizationsArray = data.result;
         }
-
+ 
         if (organizationsArray.length > 0) {
           const transformedOptions = organizationsArray.map(item => ({
             value: item.id || item.organizationId,
@@ -54,9 +54,9 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         setPaymentState(prev => ({ ...prev, loading: false }));
       }
     };
-
+ 
     fetchOrganizations();
-
+ 
     // Fetch cities on mount
     const fetchCities = async () => {
       setPaymentState(prev => ({ ...prev, loading: true }));
@@ -68,7 +68,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
           }
         });
         let data = await response.json();
-
+ 
         // Normalize possible shapes
         let citiesArray = [];
         if (Array.isArray(data)) {
@@ -78,12 +78,12 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         } else if (data && Array.isArray(data.result)) {
           citiesArray = data.result;
         }
-
+ 
         const transformed = citiesArray.map(item => ({
           value: item.id || item.cityId || item.value,
           label: item.name || item.cityName || item.label
         })).filter(opt => opt.label);
-
+ 
         setPaymentState(prev => ({ ...prev, cityOptions: transformed }));
       } catch (e) {
         setPaymentState(prev => ({ ...prev, cityOptions: [] }));
@@ -91,10 +91,10 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         setPaymentState(prev => ({ ...prev, loading: false }));
       }
     };
-
+ 
     fetchCities();
   }, []);
-
+ 
   // Fetch banks when organization changes
   useEffect(() => {
     const fetchBanks = async (organizationId) => {
@@ -102,11 +102,11 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         setPaymentState(prev => ({ ...prev, bankOptions: [] }));
         return;
       }
-
+ 
       setPaymentState(prev => ({ ...prev, loading: true }));
       try {
         const data = await saleApi.getBanksByOrganization(organizationId);
-        
+       
         // Handle different response formats
         let banksArray = [];
         if (Array.isArray(data)) {
@@ -118,7 +118,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         } else if (data && data.result && Array.isArray(data.result)) {
           banksArray = data.result;
         }
-
+ 
         if (banksArray.length > 0) {
           const transformedOptions = banksArray.map(item => ({
             value: item.id || item.bankId,
@@ -135,11 +135,11 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         setPaymentState(prev => ({ ...prev, loading: false }));
       }
     };
-
+ 
     // Check both DD and Cheque organization IDs
     const ddOrgId = values.mainDdOrganisationId;
     const chequeOrgId = values.mainChequeOrganisationId;
-    
+   
     if (ddOrgId) {
       fetchBanks(ddOrgId);
     } else if (chequeOrgId) {
@@ -148,7 +148,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
       setPaymentState(prev => ({ ...prev, bankOptions: [] }));
     }
   }, [values.mainDdOrganisationId, values.mainChequeOrganisationId]);
-
+ 
   // Fetch branches when both organization and bank are selected
   useEffect(() => {
     const fetchBranches = async (organizationId, bankId) => {
@@ -156,11 +156,11 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         setPaymentState(prev => ({ ...prev, branchOptions: [] }));
         return;
       }
-
+ 
       setPaymentState(prev => ({ ...prev, loading: true }));
       try {
         const data = await saleApi.getBranchesByOrganizationAndBank(organizationId, bankId);
-        
+       
         // Handle different response formats
         let branchesArray = [];
         if (Array.isArray(data)) {
@@ -172,7 +172,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         } else if (data && data.result && Array.isArray(data.result)) {
           branchesArray = data.result;
         }
-
+ 
         if (branchesArray.length > 0) {
           const transformedOptions = branchesArray.map(item => ({
             value: item.id || item.branchId,
@@ -189,13 +189,13 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         setPaymentState(prev => ({ ...prev, loading: false }));
       }
     };
-
+ 
     // Check both DD and Cheque organization and bank IDs
     const ddOrgId = values.mainDdOrganisationId;
     const ddBankId = values.mainDdBankId;
     const chequeOrgId = values.mainChequeOrganisationId;
     const chequeBankId = values.mainChequeBankId;
-    
+   
     if (ddOrgId && ddBankId) {
       fetchBranches(ddOrgId, ddBankId);
     } else if (chequeOrgId && chequeBankId) {
@@ -204,7 +204,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
       setPaymentState(prev => ({ ...prev, branchOptions: [] }));
     }
   }, [values.mainDdOrganisationId, values.mainDdBankId, values.mainChequeOrganisationId, values.mainChequeBankId]);
-
+ 
   // Optimized options mapping with useMemo
   const optionsMap = useMemo(() => ({
     "organizationOptions": organizationOptions,
@@ -212,16 +212,16 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
     "branchOptions": branchOptions,
     "cityOptions": cityOptions
   }), [organizationOptions, bankOptions, branchOptions, cityOptions]);
-
+ 
   const getOptions = useCallback((optionsKey) => {
     return optionsMap[optionsKey] || [];
   }, [optionsMap]);
-
+ 
   // Handle organization change to store ID - optimized with useCallback
   const handleOrganizationChange = useCallback((e) => {
     handleChange(e);
     const fieldName = e.target.name;
-    
+   
     // Check if this is an organization field
     if (fieldName === "mainDdOrganisationName" || fieldName === "mainChequeOrganisationName") {
       // Find the selected option to get both label and ID
@@ -234,7 +234,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
           console.log(`${idFieldName} stored for backend:`, selectedOption.value);
           console.log('Organization name:', selectedOption.label);
         }
-        
+       
         // Clear bank fields when organization changes
         if (fieldName === "mainDdOrganisationName") {
           setFieldValue('mainDdBankName', '');
@@ -254,7 +254,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         if (DEBUG) {
           console.log(`${idFieldName} cleared`);
         }
-        
+       
         // Clear bank fields when organization is cleared
         if (fieldName === "mainDdOrganisationName") {
           setFieldValue('mainDdBankName', '');
@@ -270,12 +270,12 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
       }
     }
   }, [handleChange, setFieldValue, organizationOptions]);
-
+ 
   // Handle bank change to store ID - optimized with useCallback
   const handleBankChange = useCallback((e) => {
     handleChange(e);
     const fieldName = e.target.name;
-    
+   
     // Check if this is a bank field
     if (fieldName === "mainDdBankName" || fieldName === "mainChequeBankName") {
       // Find the selected option to get both label and ID
@@ -288,7 +288,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
           console.log(`${idFieldName} stored for backend:`, selectedOption.value);
           console.log('Bank name:', selectedOption.label);
         }
-        
+       
         // Clear branch fields when bank changes
         if (fieldName === "mainDdBankName") {
           setFieldValue('mainDdBranchName', '');
@@ -304,7 +304,7 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
         if (DEBUG) {
           console.log(`${idFieldName} cleared`);
         }
-        
+       
         // Clear branch fields when bank is cleared
         if (fieldName === "mainDdBankName") {
           setFieldValue('mainDdBranchName', '');
@@ -316,12 +316,12 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
       }
     }
   }, [handleChange, setFieldValue, bankOptions]);
-
+ 
   // Handle branch change to store ID - optimized with useCallback
   const handleBranchChange = useCallback((e) => {
     handleChange(e);
     const fieldName = e.target.name;
-    
+   
     // Check if this is a branch field
     if (fieldName === "mainDdBranchName" || fieldName === "mainChequeBranchName") {
       // Find the selected option to get both label and ID
@@ -344,7 +344,22 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
       }
     }
   }, [handleChange, setFieldValue, branchOptions]);
-
+ 
+  // Handle receipt number input - limit to 9 digits and numbers only
+  const handleReceiptNumberChange = useCallback((e) => {
+    const fieldName = e.target.name;
+    let value = e.target.value;
+   
+    // Remove non-digit characters
+    const filteredValue = value.replace(/\D/g, '');
+   
+    // Limit to 9 digits for receipt numbers
+    const limitedValue = filteredValue.slice(0, 9);
+   
+    // Update the field value
+    setFieldValue(fieldName, limitedValue);
+  }, [setFieldValue]);
+ 
   return (
     <div className={styles.form_fields_container}>
       {formFields.map((field, index) => (
@@ -372,7 +387,15 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
                   label={field.label}
                   name={field.name}
                   value={values[field.name] || ""}
-                  onChange={handleChange}
+                  onChange={
+                    // Use custom handler for receipt number fields to limit to 9 digits
+                    (field.name === "receiptNumber" ||
+                     field.name === "mainDdReceiptNumber" ||
+                     field.name === "mainChequeReceiptNumber" ||
+                     field.name === "cardReceiptNumber")
+                      ? handleReceiptNumberChange
+                      : handleChange
+                  }
                   onBlur={handleBlur}
                   type={field.type}
                   placeholder={field.placeholder}
@@ -388,5 +411,5 @@ const PaymentFormFields = ({ formFields, values, handleChange, handleBlur, setFi
     </div>
   );
 };
-
+ 
 export default memo(PaymentFormFields);

@@ -2,18 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Formik, Form } from 'formik';
 import { paymentModes, initialValues } from './constants/paymentConstants';
 import { getPaymentFields } from './constants/paymentFieldConfigs';
+import { createPaymentValidationSchema } from './constants/ValidationSchema';
 import { usePaymentSubmission } from './hooks/usePaymentSubmission';
 import PaymentModeSelector from './components/PaymentModeSelector';
 import CreditCardOptions from './components/CreditCardOptions';
 import PaymentFormFields from './components/PaymentFormFields';
 import PaymentFormActions from './components/PaymentFormActions';
 import styles from './PaymentForm.module.css';
-
+ 
 const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, onSubmitCompleteSale, onSubmitConfirmation, preFilledAmount }) => {
   const [selectedPaymentMode, setSelectedPaymentMode] = useState("Cash");
   const { isSubmitting, error, handleSubmit } = usePaymentSubmission();
   const formikRef = useRef(null);
-
+ 
   const onSubmit = async (values) => {
     console.log('PaymentForm onSubmit called with values:', values);
     console.log('Selected payment mode:', selectedPaymentMode);
@@ -71,7 +72,7 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
         }
       }
   };
-
+ 
   // Map payment modes to their corresponding amount field names
   const getAmountFieldName = (paymentMode) => {
     const fieldMap = {
@@ -82,7 +83,7 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
     };
     return fieldMap[paymentMode] || 'amount';
   };
-
+ 
   // Sync amount field when payment mode changes or preFilledAmount updates
   // Auto-populate in both sale mode and confirmation mode when preFilledAmount is provided
   useEffect(() => {
@@ -118,11 +119,11 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
       console.log('💰 PaymentForm: preFilledAmount is not available, amount field will be empty');
     }
   }, [selectedPaymentMode, preFilledAmount, isConfirmationMode]);
-
+ 
   const handlePaymentModeSelect = (mode) => {
     setSelectedPaymentMode(mode);
   };
-
+ 
   return (
     <div className={styles.payment_form_container}>
       <PaymentModeSelector
@@ -130,7 +131,7 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
         onPaymentModeSelect={handlePaymentModeSelect}
         paymentModes={paymentModes}
       />
-
+ 
       <div className={styles.payment_form_down}>
         <Formik
           innerRef={formikRef}
@@ -143,7 +144,10 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
             mainChequeAmount: (preFilledAmount != null && preFilledAmount !== 0) ? String(preFilledAmount) : initialValues.mainChequeAmount,
             cardAmount: (preFilledAmount != null && preFilledAmount !== 0) ? String(preFilledAmount) : initialValues.cardAmount
           }}
+          validationSchema={createPaymentValidationSchema(selectedPaymentMode)}
           enableReinitialize={true}
+          validateOnBlur={true}
+          validateOnChange={true}
           onSubmit={onSubmit}
         >
           {({ values, handleChange, handleBlur, setFieldValue }) => (
@@ -154,7 +158,7 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
                   {error}
                 </div>
               )}
-
+ 
               <div>
                 {/* PRO Credit Card and Application Special Concession - only visible when Credit/Debit Card is selected */}
               {selectedPaymentMode === "Credit/Debit Card" && (
@@ -163,7 +167,7 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
                   handleChange={handleChange}
                 />
               )}
-
+ 
               <PaymentFormFields
                 formFields={getPaymentFields(selectedPaymentMode)}
                 values={values}
@@ -172,7 +176,7 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
                 setFieldValue={setFieldValue}
               />
               </div>
-
+ 
               <PaymentFormActions
                 onSubmit={onSubmit}
                 values={values}
@@ -186,6 +190,5 @@ const PaymentForm = ({ onClose, onPaymentSuccess, isConfirmationMode = false, on
     </div>
   );
 };
-
+ 
 export default PaymentForm;
-

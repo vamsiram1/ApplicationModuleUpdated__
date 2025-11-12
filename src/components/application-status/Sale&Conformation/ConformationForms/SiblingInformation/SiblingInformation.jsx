@@ -409,7 +409,7 @@ const SiblingInformation = forwardRef(({ onSuccess }, ref) => {
               ))}
               
               {/* Add Another Sibling and Add Annexure buttons - side by side */}
-              <div style={styles.sibling_annexure_buttons}>
+               <div className={styles.sibling_annexure_buttons}>
                 <Button
                   type="button"
                   variant="secondary"

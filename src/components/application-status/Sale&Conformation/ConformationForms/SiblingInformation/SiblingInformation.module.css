@@ -215,7 +215,10 @@
 
 
 .sibling_annexure_buttons{
-
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  align-items: center;
 }
 
 /* Responsive design */
